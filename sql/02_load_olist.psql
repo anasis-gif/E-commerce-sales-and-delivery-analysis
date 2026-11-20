@@ -1,0 +1,23 @@
+-- Run this with psql from the project root after creating/connect to database `olist_sales`.
+-- It creates staging tables, replaces any prior staged extract, imports the CSVs,
+-- rebuilds the analytical views, then prints the four analysis result sets.
+\set ON_ERROR_STOP on
+\ir 01_build_model.sql
+
+TRUNCATE TABLE staging.orders, staging.order_items, staging.order_payments,
+ staging.order_reviews, staging.customers, staging.products, staging.sellers,
+ staging.category_translation;
+
+\copy staging.orders FROM 'data/raw/olist_orders_dataset.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy staging.order_items FROM 'data/raw/olist_order_items_dataset.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy staging.order_payments FROM 'data/raw/olist_order_payments_dataset.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy staging.order_reviews FROM 'data/raw/olist_order_reviews_dataset.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy staging.customers FROM 'data/raw/olist_customers_dataset.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy staging.products FROM 'data/raw/olist_products_dataset.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy staging.sellers FROM 'data/raw/olist_sellers_dataset.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy staging.category_translation FROM 'data/raw/product_category_name_translation.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+
+\ir 01_build_model.sql
+
+\copy (SELECT * FROM analytics.fact_order) TO 'data/exports/fact_order.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')
+\copy (SELECT * FROM analytics.fact_order_item) TO 'data/exports/fact_order_item.csv' WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')

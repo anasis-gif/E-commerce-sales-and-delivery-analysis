@@ -1,0 +1,31 @@
+Revenue = SUM ( fact_order_item[item_price] )
+
+Orders = DISTINCTCOUNT ( fact_order_item[order_id] )
+
+Average Order Value = DIVIDE ( [Revenue], [Orders] )
+
+Average Review Score = AVERAGE ( fact_order[review_score] )
+
+Late Orders =
+CALCULATE (
+    DISTINCTCOUNT ( fact_order[order_id] ),
+    fact_order[delivery_delay_days] > 0,
+    NOT ISBLANK ( fact_order[delivery_delay_days] )
+)
+
+Delivered Orders =
+CALCULATE (
+    DISTINCTCOUNT ( fact_order[order_id] ),
+    NOT ISBLANK ( fact_order[delivery_delay_days] )
+)
+
+Late Delivery Rate = DIVIDE ( [Late Orders], [Delivered Orders] )
+
+Average Delivery Delay (Days) = AVERAGE ( fact_order[delivery_delay_days] )
+
+On-Time Orders =
+CALCULATE (
+    DISTINCTCOUNT ( fact_order[order_id] ),
+    fact_order[delivery_delay_days] <= 0,
+    NOT ISBLANK ( fact_order[delivery_delay_days] )
+)

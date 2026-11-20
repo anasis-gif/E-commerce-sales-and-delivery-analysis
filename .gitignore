@@ -1,0 +1,4 @@
+data/raw/*.csv
+data/exports/*.csv
+*.pbix
+*.pbixproj
